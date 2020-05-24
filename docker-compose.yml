@@ -1,4 +1,5 @@
 # docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' pg
+# pg ip: 172.18.0.2
 
 version: '3.1'
 services:
@@ -8,8 +9,10 @@ services:
     container_name: pg
     restart: always
     environment:
-      POSTGRES_USER: gavr
+      POSTGRES_USER: postgres_user
       POSTGRES_PASSWORD: mysecretpassword
+    ports:
+    - 5432:5432
 
   adminer:
     image: dpage/pgadmin4
