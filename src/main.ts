@@ -1,14 +1,17 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { setupSwagger } from './setupSwagger';
-
-const PORT = 3000;
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await setupSwagger(app);
-  await app.listen(PORT);
-}
-bootstrap();
+  const configService = app.get(ConfigService);
+  const PORT = configService.get('PORT');
 
-console.info(`Server was running on http://127.0.0.1:${PORT}`);
+  await setupSwagger(app);
+
+  await app.listen(PORT);
+  console.info(`Server was running on http://127.0.0.1:${PORT}`);
+}
+
+bootstrap();
