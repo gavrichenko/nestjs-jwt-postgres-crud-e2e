@@ -2,8 +2,9 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './modules/user/user.module';
 import { ConfigModule } from '@nestjs/config';
-import configuration from '../config/configuration';
-import configValidationSchema from '../config/configValidationSchema';
+import configuration from '../config/app.config';
+import configValidationSchema from '../config/app-config-validation-schema';
+import TypeOrmModuleOptions from '../config/type-orm.config';
 
 @Module({
   imports: [
@@ -12,9 +13,7 @@ import configValidationSchema from '../config/configValidationSchema';
       validationSchema: configValidationSchema,
       isGlobal: true, // ability to use ConfigModule in other modules
     }),
-    TypeOrmModule.forRoot({
-      autoLoadEntities: true,
-    }),
+    TypeOrmModule.forRootAsync(TypeOrmModuleOptions),
     UserModule,
   ],
   controllers: [],

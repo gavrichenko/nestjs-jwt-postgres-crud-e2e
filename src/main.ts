@@ -11,8 +11,9 @@ async function bootstrap() {
 
   await setupSwagger(app);
 
-  await app.listen(PORT);
-  console.info(`Server was running on http://${HOST}:${PORT}`);
+  await app.listen(PORT, () =>
+    console.info(`Server is running on http://${HOST}:${PORT}`),
+  );
 }
 
 bootstrap();
