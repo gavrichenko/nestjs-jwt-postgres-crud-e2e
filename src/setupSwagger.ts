@@ -6,6 +6,7 @@ function getSwaggerOptions() {
     .setTitle('API')
     .setDescription('The API description')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 }
 export function setupSwagger(app: INestApplication) {
