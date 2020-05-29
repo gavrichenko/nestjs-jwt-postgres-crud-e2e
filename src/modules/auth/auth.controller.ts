@@ -4,18 +4,23 @@ import {
   Post,
   Request,
   Get,
-  HttpCode,
+  HttpCode, Body,
 } from '@nestjs/common';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserLoginDto } from './dto/user-login.dto';
+import { UserRegisterDto } from './dto/user-register-dto';
+import { UsersService } from '../users/users.service';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private userService: UsersService,
+  ) {}
 
   @Post('login')
   @UseGuards(LocalAuthGuard)
@@ -33,5 +38,15 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   getProfile(@Request() req) {
     return req.user;
+  }
+
+
+  @Post('register')
+  @HttpCode(201)
+  @ApiBody({ type: UserRegisterDto })
+  @ApiResponse({ status: 201, description: 'created' })
+  @ApiResponse({ status: 400, description: 'BAD_REQUEST' })
+  async register(@Body() data: UserRegisterDto) {
+    return this.userService.register(data);
   }
 }
