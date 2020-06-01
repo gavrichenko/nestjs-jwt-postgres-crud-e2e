@@ -10,6 +10,7 @@ async function bootstrap() {
   const PORT = configService.get<number>('port');
   const HOST = configService.get<string>('host');
 
+  app.setGlobalPrefix('api/v1')
   await setupSwagger(app);
 
   await app.listen(PORT, () =>
