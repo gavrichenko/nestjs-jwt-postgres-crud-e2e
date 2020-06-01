@@ -23,12 +23,12 @@ export class AuthService {
     if (!user) {
       throw new HttpException(
         `User with username '${username}' was not found`,
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.UNAUTHORIZED,
       );
     }
     const isPasswordCorrect = await user.comparePassword(password);
     if (!isPasswordCorrect) {
-      throw new HttpException('Incorrect password', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Incorrect password', HttpStatus.UNAUTHORIZED);
     }
     const jwtPayload = {
       username,
@@ -49,8 +49,15 @@ export class AuthService {
     if (foundUser) {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
-    const user = await this.usersRepository.create(data);
-    await this.usersRepository.save(user);
-    return user.toResponseObject();
+    try {
+      const user = await this.usersRepository.create(data);
+      await this.usersRepository.save(user);
+      return user.toResponseObject();
+    } catch (e) {
+      throw new HttpException(
+        'INTERNAL_SERVER_ERROR',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

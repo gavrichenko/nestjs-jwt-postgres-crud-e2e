@@ -10,7 +10,15 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { UserLoginDto } from '../users/dto/user-login.dto';
 import { UserRegisterDto } from '../users/dto/user-register-dto';
 import { ValidationPipe } from '../../shared/validation.pipe';
@@ -25,8 +33,8 @@ export class AuthController {
   @UsePipes(ValidationPipe)
   @HttpCode(200)
   @ApiBody({ type: UserLoginDto })
-  @ApiResponse({ status: 200, description: 'OK', type: UserResponseDto })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiOkResponse({ description: 'User Login', type: UserResponseDto })
+  @ApiUnauthorizedResponse({ description: 'Invalid credentials' })
   async login(@Body() data: UserLoginDto) {
     return this.authService.login(data);
   }
@@ -42,8 +50,11 @@ export class AuthController {
   @UsePipes(ValidationPipe)
   @HttpCode(201)
   @ApiBody({ type: UserRegisterDto })
-  @ApiResponse({ status: 201, description: 'created', type: UserResponseDto })
-  @ApiResponse({ status: 400, description: 'BAD_REQUEST' })
+  @ApiCreatedResponse({
+    description: 'User Registration',
+    type: UserResponseDto,
+  })
+  @ApiBadRequestResponse({ description: 'User already exists' })
   async register(@Body() data: UserRegisterDto) {
     return this.authService.register(data);
   }

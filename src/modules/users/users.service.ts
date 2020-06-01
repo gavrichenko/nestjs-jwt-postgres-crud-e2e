@@ -25,7 +25,14 @@ export class UsersService {
   }
 
   async showAll(): Promise<UserResponseDto[]> {
-    const users = await this.usersRepository.find();
-    return users.map(user => user.toResponseObject());
+    try {
+      const users = await this.usersRepository.find();
+      return users.map(user => user.toResponseObject());
+    } catch (e) {
+      throw new HttpException(
+        'INTERNAL_SERVER_ERROR',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

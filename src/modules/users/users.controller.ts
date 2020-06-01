@@ -1,5 +1,11 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { UserResponseDto } from './dto/user-response.dto';
 
@@ -10,15 +16,16 @@ export class UsersController {
 
   @Get()
   @ApiOperation({ summary: 'get all users' })
-  @ApiResponse({ status: 200, description: 'OK', type: [UserResponseDto] })
+  @ApiOkResponse({ type: [UserResponseDto] })
+  @ApiInternalServerErrorResponse()
   showAllUsers() {
     return this.userService.showAll();
   }
 
   @Get(':username')
   @ApiOperation({ summary: 'get one user' })
-  @ApiResponse({ status: 200, description: 'OK', type: UserResponseDto })
-  @ApiResponse({ status: 404, description: 'Not Found' })
+  @ApiOkResponse({ type: UserResponseDto })
+  @ApiNotFoundResponse({ description: 'Not Found' })
   getOneUser(@Param('username') username: string) {
     return this.userService.findOne(username);
   }
