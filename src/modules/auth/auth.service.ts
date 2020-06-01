@@ -1,29 +1,56 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { UserRegisterDto } from '../users/dto/user-register-dto';
+import { UserEntity } from '../users/entities/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { UserLoginDto } from '../users/dto/user-login.dto';
+import { UserResponseDto } from '../users/dto/user-response.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
+    @InjectRepository(UserEntity)
+    private usersRepository: Repository<UserEntity>,
     private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.usersService.findOne(username);
-    if (user && user.password === pass) {
-      const { password, ...result } = user;
-      console.log('password', password);
-      return result;
+  async login(data: UserLoginDto): Promise<UserResponseDto> {
+    const { username, password } = data;
+    const user = await this.usersRepository.findOne({ where: { username } });
+    if (!user) {
+      throw new HttpException(
+        `User with username '${username}' was not found`,
+        HttpStatus.BAD_REQUEST,
+      );
     }
-    return null;
+    const isPasswordCorrect = await user.comparePassword(password);
+    if (!isPasswordCorrect) {
+      throw new HttpException('Incorrect password', HttpStatus.BAD_REQUEST);
+    }
+    const jwtPayload = {
+      username,
+      sub: user.id,
+    };
+    return {
+      ...user.toResponseObject(),
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      access_token: this.jwtService.sign(jwtPayload),
+    };
   }
 
-  async login(user: any) {
-    const payload = { username: user.username, sub: user.userId };
-    return {
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      access_token: this.jwtService.sign(payload),
-    };
+  async register(data: UserRegisterDto): Promise<UserResponseDto> {
+    const { username } = data;
+    const foundUser = await this.usersRepository.findOne({
+      where: { username },
+    });
+    if (foundUser) {
+      throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
+    }
+    const user = await this.usersRepository.create(data);
+    await this.usersRepository.save(user);
+    return user.toResponseObject();
   }
 }

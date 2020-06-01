@@ -3,12 +3,31 @@ import {
   Catch,
   ExceptionFilter,
   HttpException,
+  HttpStatus,
   Logger,
 } from '@nestjs/common';
+import { isInstance } from 'class-validator';
 
 @Catch()
 export class HttpErrorFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost): any {
+    if (!isInstance(exception, HttpException)) {
+      const errorResponse = {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        timestamp: new Date().toLocaleString(),
+        message: 'Internal error',
+      };
+      Logger.error(
+        `Internal error: ${exception}`,
+        JSON.stringify(errorResponse),
+        'ExceptionFilter',
+      );
+      return host
+        .switchToHttp()
+        .getResponse()
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json(errorResponse);
+    }
     const ctx = host.switchToHttp();
     const request = ctx.getRequest();
     const response = ctx.getResponse();
@@ -33,6 +52,6 @@ export class HttpErrorFilter implements ExceptionFilter {
       'ExceptionFilter',
     );
 
-    response.status(404).json(errorResponse);
+    response.status(errorResponse.code).json(errorResponse);
   }
 }

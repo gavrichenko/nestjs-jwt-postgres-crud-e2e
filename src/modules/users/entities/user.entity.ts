@@ -6,11 +6,12 @@ import {
   BeforeInsert,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { UserResponseDto } from '../dto/user-response.dto';
 
 @Entity('user')
 export class UserEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @CreateDateColumn()
   created: Date;
@@ -37,5 +38,20 @@ export class UserEntity {
   @BeforeInsert()
   async hashPassword() {
     this.password = await bcrypt.hash(this.password, 10);
+  }
+
+  toResponseObject(): UserResponseDto {
+    const { id, created, username, firstName, lastName } = this;
+    return {
+      id,
+      created,
+      username,
+      firstName,
+      lastName,
+    };
+  }
+
+  async comparePassword(attempt: string): Promise<boolean> {
+    return await bcrypt.compare(attempt, this.password);
   }
 }
