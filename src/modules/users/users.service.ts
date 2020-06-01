@@ -4,25 +4,27 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { UserRegisterDto } from '../auth/dto/user-register-dto';
 
-
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-  ) {
-
-  }
+  ) {}
 
   async findOne(username: string): Promise<User> {
-    const foundUser = await this.usersRepository.findOne({where: {username}});
-    if(!foundUser) {
-      throw new HttpException(`User ${username} was not found`, HttpStatus.NOT_FOUND);
+    const foundUser = await this.usersRepository.findOne({
+      where: { username },
+    });
+    if (!foundUser) {
+      throw new HttpException(
+        `User ${username} was not found`,
+        HttpStatus.NOT_FOUND,
+      );
     }
     return foundUser;
   }
 
-  async showAll(): Promise<User[]>  {
+  async showAll(): Promise<User[]> {
     return await this.usersRepository.find();
   }
 

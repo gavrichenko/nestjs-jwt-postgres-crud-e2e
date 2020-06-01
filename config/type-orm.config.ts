@@ -13,6 +13,7 @@ const TypeOrmModuleOptions: TypeOrmModuleAsyncOptions = {
     database: configService.get('database.name'),
     synchronize: true,
     autoLoadEntities: true,
+    logging: true,
   }),
 };
 

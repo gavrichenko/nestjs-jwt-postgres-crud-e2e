@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { setupSwagger } from './setupSwagger';
 import { ConfigService } from '@nestjs/config';
+import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,7 +13,7 @@ async function bootstrap() {
   await setupSwagger(app);
 
   await app.listen(PORT, () =>
-    console.info(`Server is running on http://${HOST}:${PORT}`),
+    Logger.verbose(`Server running on http://${HOST}:${PORT}`, 'Bootstrap'),
   );
 }
 

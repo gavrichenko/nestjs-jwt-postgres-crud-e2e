@@ -25,12 +25,12 @@ export class User {
   password: string;
 
   @Column({
-    nullable: true
+    nullable: true,
   })
   firstName: string;
 
   @Column({
-    nullable: true
+    nullable: true,
   })
   lastName: string;
 

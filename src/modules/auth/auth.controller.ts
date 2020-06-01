@@ -4,7 +4,8 @@ import {
   Post,
   Request,
   Get,
-  HttpCode, Body,
+  HttpCode,
+  Body,
 } from '@nestjs/common';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
@@ -39,7 +40,6 @@ export class AuthController {
   getProfile(@Request() req) {
     return req.user;
   }
-
 
   @Post('register')
   @HttpCode(201)

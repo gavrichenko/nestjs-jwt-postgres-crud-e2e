@@ -8,7 +8,8 @@ export class UsersController {
   constructor(private userService: UsersService) {}
 
   @Get()
-  @ApiOperation({ summary: 'get all users' })  showAllUsers() {
+  @ApiOperation({ summary: 'get all users' })
+  showAllUsers() {
     return this.userService.showAll();
   }
 
