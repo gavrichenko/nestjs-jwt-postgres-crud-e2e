@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { IdeaModule } from './modules/idea/idea.module';
 import configuration from '../config/app.config';
 import configValidationSchema from '../config/app-config-validation-schema';
 import TypeOrmModuleOptions from '../config/type-orm.config';
@@ -17,6 +18,7 @@ import TypeOrmModuleOptions from '../config/type-orm.config';
     TypeOrmModule.forRootAsync(TypeOrmModuleOptions),
     AuthModule,
     UsersModule,
+    IdeaModule,
   ],
   controllers: [],
   providers: [],

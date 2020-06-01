@@ -1,17 +1,17 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
+import { UserEntity } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { UserRegisterDto } from '../auth/dto/user-register-dto';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    @InjectRepository(UserEntity)
+    private usersRepository: Repository<UserEntity>,
   ) {}
 
-  async findOne(username: string): Promise<User> {
+  async findOne(username: string): Promise<UserEntity> {
     const foundUser = await this.usersRepository.findOne({
       where: { username },
     });
@@ -24,11 +24,11 @@ export class UsersService {
     return foundUser;
   }
 
-  async showAll(): Promise<User[]> {
+  async showAll(): Promise<UserEntity[]> {
     return await this.usersRepository.find();
   }
 
-  async register(data: UserRegisterDto): Promise<User> {
+  async register(data: UserRegisterDto): Promise<UserEntity> {
     const { username } = data;
     let user = await this.usersRepository.findOne({ where: { username } });
     if (user) {
