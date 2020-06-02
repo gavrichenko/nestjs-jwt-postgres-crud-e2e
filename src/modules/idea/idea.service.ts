@@ -1,49 +1,39 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { IdeaEntity } from './entities/idea.entity';
-import { IdeaDto } from './dto/idea.dto';
+import { IdeaEntity } from '../../shared/entities/idea.entity';
+import { IdeasRepository } from '../../shared/repositories/ideas.repository';
+import { IdeaResponseDto } from './dto/idea-response.dto';
+import { IdeaCreateDto } from './dto/idea-create.dto';
 
 @Injectable()
 export class IdeaService {
   constructor(
-    @InjectRepository(IdeaEntity)
-    private ideaRepository: Repository<IdeaEntity>,
+    @InjectRepository(IdeasRepository)
+    private readonly ideasRepository: IdeasRepository,
   ) {}
 
-  async showAll() {
-    return await this.ideaRepository.find();
+  async getIdeas(): Promise<IdeaResponseDto[]> {
+    const items: IdeaEntity[] = await this.ideasRepository.getIdeas();
+    return items.map(item => item.toResponseObject());
   }
 
-  async create(data: IdeaDto) {
-    const idea = await this.ideaRepository.create(data);
-    await this.ideaRepository.save(idea);
-    return idea;
+  async getIdea(id: string): Promise<IdeaResponseDto> {
+    const item: IdeaEntity = await this.ideasRepository.getIdea(id);
+    return item.toResponseObject();
   }
 
-  async read(id: string) {
-    const foundItem = await this.ideaRepository.findOne({ where: { id } });
-    if (!foundItem) {
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
-    }
-    return foundItem;
+  async createIdea(data: IdeaCreateDto): Promise<IdeaResponseDto> {
+    const item: IdeaEntity = await this.ideasRepository.createIdea(data);
+    return item.toResponseObject();
   }
 
-  async update(id: string, data: Partial<IdeaDto>) {
-    const idea = await this.ideaRepository.findOne({ where: { id } });
-    if (!idea) {
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
-    }
-    return await this.ideaRepository.save({ ...idea, ...data });
+  async updateIdea(id: string, data: Partial<IdeaCreateDto>): Promise<IdeaResponseDto> {
+    const item: IdeaEntity = await this.ideasRepository.updateIdea(id, data);
+    return item.toResponseObject();
   }
 
-  async destroy(id: string) {
-    const foundItem = await this.ideaRepository.findOne({ where: { id } });
-    if (!foundItem) {
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
-    }
-
-    await this.ideaRepository.delete({ id });
-    return { deleted: true };
+  async removeIdea(id: string): Promise<{ deleted: string }> {
+    const itemId: string = await this.ideasRepository.removeIdea(id);
+    return { deleted: itemId };
   }
 }

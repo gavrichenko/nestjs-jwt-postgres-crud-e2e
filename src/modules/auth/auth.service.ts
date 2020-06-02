@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserRegisterDto } from '../users/dto/user-register-dto';
-import { UserEntity } from '../users/entities/user.entity';
+import { UserEntity } from '../../shared/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserLoginDto } from '../users/dto/user-login.dto';
@@ -54,10 +54,7 @@ export class AuthService {
       await this.usersRepository.save(user);
       return user.toResponseObject();
     } catch (e) {
-      throw new HttpException(
-        'INTERNAL_SERVER_ERROR',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new HttpException('INTERNAL_SERVER_ERROR', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

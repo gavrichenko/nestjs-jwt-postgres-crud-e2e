@@ -8,11 +8,7 @@ import { UsersModule } from './modules/users/users.module';
 import { IdeaModule } from './modules/idea/idea.module';
 import { HttpErrorFilter } from './shared/http-error.filter';
 import { LoggingInterceptor } from './shared/logging.interceptor';
-import {
-  appConfig,
-  configValidationSchema,
-  TypeOrmModuleOptions,
-} from './config';
+import { appConfig, configValidationSchema, TypeOrmModuleOptions } from './config';
 
 @Module({
   imports: [

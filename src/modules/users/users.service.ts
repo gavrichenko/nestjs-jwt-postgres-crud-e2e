@@ -1,38 +1,23 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from './entities/user.entity';
-import { Repository } from 'typeorm';
 import { UserResponseDto } from './dto/user-response.dto';
+import { UsersRepository } from '../../shared/repositories/users.repository';
+import { UserEntity } from '../../shared/entities/user.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(UserEntity)
-    private usersRepository: Repository<UserEntity>,
+    @InjectRepository(UsersRepository)
+    private readonly usersRepository: UsersRepository,
   ) {}
 
-  async findOne(username: string): Promise<UserResponseDto> {
-    const foundUser = await this.usersRepository.findOne({
-      where: { username },
-    });
-    if (!foundUser) {
-      throw new HttpException(
-        `User ${username} was not found`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    return foundUser.toResponseObject();
+  async getUser(username: string): Promise<UserResponseDto> {
+    const user: UserEntity = await this.usersRepository.getUserByUsername(username);
+    return user.toResponseObject();
   }
 
-  async showAll(): Promise<UserResponseDto[]> {
-    try {
-      const users = await this.usersRepository.find();
-      return users.map(user => user.toResponseObject());
-    } catch (e) {
-      throw new HttpException(
-        'INTERNAL_SERVER_ERROR',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+  async getUsers(): Promise<UserResponseDto[]> {
+    const users: UserEntity[] = await this.usersRepository.getUsers();
+    return users.map(user => user.toResponseObject());
   }
 }

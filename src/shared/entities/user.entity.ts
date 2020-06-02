@@ -1,12 +1,6 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  BeforeInsert,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, BeforeInsert } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { UserResponseDto } from '../dto/user-response.dto';
+import { UserResponseDto } from '../../modules/users/dto/user-response.dto';
 
 @Entity('user')
 export class UserEntity {

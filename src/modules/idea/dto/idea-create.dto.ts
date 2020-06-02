@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 
-export class IdeaDto {
+export class IdeaCreateDto {
   @ApiProperty()
   @IsString()
   idea: string;

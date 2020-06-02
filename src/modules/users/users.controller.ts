@@ -12,21 +12,21 @@ import { UserResponseDto } from './dto/user-response.dto';
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
-  constructor(private userService: UsersService) {}
+  constructor(private usersService: UsersService) {}
 
   @Get()
-  @ApiOperation({ summary: 'get all users' })
+  @ApiOperation({ summary: 'get users' })
   @ApiOkResponse({ type: [UserResponseDto] })
   @ApiInternalServerErrorResponse()
-  showAllUsers() {
-    return this.userService.showAll();
+  getUsers() {
+    return this.usersService.getUsers();
   }
 
   @Get(':username')
-  @ApiOperation({ summary: 'get one user' })
+  @ApiOperation({ summary: 'get user by username' })
   @ApiOkResponse({ type: UserResponseDto })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  getOneUser(@Param('username') username: string) {
-    return this.userService.findOne(username);
+  getUser(@Param('username') usernameParam: string): Promise<UserResponseDto> {
+    return this.usersService.getUser(usernameParam);
   }
 }

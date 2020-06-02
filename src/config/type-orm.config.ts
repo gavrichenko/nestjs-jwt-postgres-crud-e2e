@@ -1,5 +1,7 @@
 import { TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UserEntity } from '../shared/entities/user.entity';
+import { IdeaEntity } from '../shared/entities/idea.entity';
 
 export const TypeOrmModuleOptions: TypeOrmModuleAsyncOptions = {
   imports: [ConfigModule],
@@ -11,8 +13,9 @@ export const TypeOrmModuleOptions: TypeOrmModuleAsyncOptions = {
     username: configService.get<string>('database.user'),
     password: configService.get<string>('database.password'),
     database: configService.get<string>('database.name'),
-    synchronize: true,
-    autoLoadEntities: true,
     logging: configService.get<boolean>('database.logging'),
+    synchronize: true,
+    ssl: false,
+    entities: [UserEntity, IdeaEntity],
   }),
 };

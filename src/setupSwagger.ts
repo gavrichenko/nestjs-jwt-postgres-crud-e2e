@@ -11,10 +11,6 @@ function getSwaggerOptions() {
 }
 export function setupSwagger(app: INestApplication) {
   return Promise.resolve(
-    SwaggerModule.setup(
-      'swagger',
-      app,
-      SwaggerModule.createDocument(app, getSwaggerOptions()),
-    ),
+    SwaggerModule.setup('swagger', app, SwaggerModule.createDocument(app, getSwaggerOptions())),
   );
 }

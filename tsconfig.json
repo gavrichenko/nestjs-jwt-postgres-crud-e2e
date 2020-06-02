@@ -1,15 +1,23 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "declaration": true,
+    "alwaysStrict": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "es2017",
+    "module": "commonjs",
+    "declaration": true,
+    "moduleResolution": "node",
+    "charset": "utf8",
+    "allowJs": false,
+    "target": "es2019",
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
-    "incremental": true
+    "incremental": false,
+    "importHelpers": true,
+    "skipDefaultLibCheck": true,
+    "allowUnreachableCode": false,
+    "pretty": true
   },
   "exclude": ["node_modules", "dist"]
 }
