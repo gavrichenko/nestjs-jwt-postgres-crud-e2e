@@ -1,61 +1,49 @@
-import {
-  Controller,
-  UseGuards,
-  Post,
-  Request,
-  Get,
-  HttpCode,
-  Body,
-  UsePipes,
-} from '@nestjs/common';
+import { Controller, Post, HttpCode, Body, UsePipes } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import {
   ApiBadRequestResponse,
-  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { UserLoginDto } from '../users/dto/user-login.dto';
-import { UserRegisterDto } from '../users/dto/user-register-dto';
 import { ValidationPipe } from '../../shared/validation.pipe';
 import { UserResponseDto } from '../users/dto/user-response.dto';
+import { LoginDto } from './dto/login.dto';
+import { SignInResponse } from './dto/sign-in-response';
+import { UserEntity } from '../../shared/entities/user.entity';
+import { CreateAccountDto } from './dto/create-account.dto';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('login')
+  @Post('signin')
   @UsePipes(ValidationPipe)
   @HttpCode(200)
-  @ApiBody({ type: UserLoginDto })
-  @ApiOkResponse({ description: 'User Login', type: UserResponseDto })
+  @ApiOperation({ summary: 'user login via username or email' })
+  @ApiBody({ type: LoginDto })
+  @ApiOkResponse({ type: SignInResponse })
   @ApiUnauthorizedResponse({ description: 'Invalid credentials' })
-  async login(@Body() data: UserLoginDto) {
-    return this.authService.login(data);
+  async login(@Body() dto: LoginDto): Promise<SignInResponse> {
+    const user: UserEntity = await this.authService.validateUser(dto);
+    return this.authService.signIn(user, dto);
   }
 
-  @Get('profile')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  getProfile(@Request() req) {
-    return req.user;
-  }
-
-  @Post('register')
+  @Post('signup')
   @UsePipes(ValidationPipe)
   @HttpCode(201)
-  @ApiBody({ type: UserRegisterDto })
+  @ApiOperation({ summary: 'register user' })
+  @ApiBody({ type: CreateAccountDto })
   @ApiCreatedResponse({
     description: 'User Registration',
     type: UserResponseDto,
   })
   @ApiBadRequestResponse({ description: 'User already exists' })
-  async register(@Body() data: UserRegisterDto) {
-    return this.authService.register(data);
+  async signUp(@Body() dto: CreateAccountDto) {
+    return this.authService.signUp(dto);
   }
 }

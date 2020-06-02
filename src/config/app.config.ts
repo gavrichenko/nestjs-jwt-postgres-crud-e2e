@@ -2,7 +2,8 @@ export const appConfig = () => ({
   host: process.env.HOST,
   port: parseInt(process.env.PORT, 10),
   jwt: {
-    secret: process.env.SECRET_FOR_ACCESS_TOKEN,
+    secret_access: process.env.SECRET_FOR_ACCESS_TOKEN,
+    secret_refresh: process.env.SECRET_FOR_REFRESH_TOKEN,
     accessTokenExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN,
   },
   database: {

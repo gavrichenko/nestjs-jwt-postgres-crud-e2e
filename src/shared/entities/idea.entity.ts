@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
 import { IdeaResponseDto } from '../../modules/idea/dto/idea-response.dto';
 
-@Entity('idea')
+@Entity('ideas')
 export class IdeaEntity {
   constructor(partial: Partial<IdeaEntity>) {
     Object.assign(this, partial);

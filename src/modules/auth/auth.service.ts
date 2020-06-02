@@ -1,60 +1,51 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserRegisterDto } from '../users/dto/user-register-dto';
 import { UserEntity } from '../../shared/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { UserLoginDto } from '../users/dto/user-login.dto';
 import { UserResponseDto } from '../users/dto/user-response.dto';
+import { UsersRepository } from '../../shared/repositories/users.repository';
+import { LoginDto } from './dto/login.dto';
+import { SignInResponse } from './dto/sign-in-response';
+import { CreateAccountDto } from './dto/create-account.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(UserEntity)
-    private usersRepository: Repository<UserEntity>,
-    private usersService: UsersService,
     private jwtService: JwtService,
+    @InjectRepository(UsersRepository)
+    private readonly usersRepository: UsersRepository,
   ) {}
 
-  async login(data: UserLoginDto): Promise<UserResponseDto> {
-    const { username, password } = data;
-    const user = await this.usersRepository.findOne({ where: { username } });
-    if (!user) {
-      throw new HttpException(
-        `User with username '${username}' was not found`,
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
-    const isPasswordCorrect = await user.comparePassword(password);
-    if (!isPasswordCorrect) {
-      throw new HttpException('Incorrect password', HttpStatus.UNAUTHORIZED);
-    }
+  async validateUser(dto: LoginDto): Promise<UserEntity> {
+    return await this.usersRepository.validateUser(dto);
+  }
+
+  async signIn(userEntity: UserEntity, dto: LoginDto): Promise<SignInResponse> {
+    if (!userEntity.is_active) throw new BadRequestException('Account is not active');
+
     const jwtPayload = {
-      username,
-      sub: user.id,
+      user_id: userEntity.id,
     };
+
+    const access_token: string = this.jwtService.sign(jwtPayload);
+    const refresh_token = await this.usersRepository.triggerRefreshToken(dto.username || dto.email);
+
     return {
-      ...user.toResponseObject(),
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      access_token: this.jwtService.sign(jwtPayload),
+      ...userEntity.toResponseObject(),
+      access_token,
+      refresh_token,
     };
   }
 
-  async register(data: UserRegisterDto): Promise<UserResponseDto> {
-    const { username } = data;
+  async signUp(dto: CreateAccountDto): Promise<UserResponseDto> {
+    const { username, email } = dto;
     const foundUser = await this.usersRepository.findOne({
-      where: { username },
+      where: [{ username }, { email }],
     });
     if (foundUser) {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
-    try {
-      const user = await this.usersRepository.create(data);
-      await this.usersRepository.save(user);
-      return user.toResponseObject();
-    } catch (e) {
-      throw new HttpException('INTERNAL_SERVER_ERROR', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    const createdUser = await this.usersRepository.createUser(dto);
+    return createdUser.toResponseObject();
   }
 }

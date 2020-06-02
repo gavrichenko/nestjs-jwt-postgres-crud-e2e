@@ -20,6 +20,7 @@ module.exports = {
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
-    'max-len': ["error", { "code": 100 }],
+    '@typescript-eslint/camelcase': 'off',
+    'max-len': ["error", { "code": 105 }],
   },
 };
