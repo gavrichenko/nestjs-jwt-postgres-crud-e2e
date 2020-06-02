@@ -1,0 +1,3 @@
+v12
+# 1) install nvm. https://github.com/nvm-sh/nvm
+# 2) nvm install // Download and install a <version>. Uses .nvmrc if available

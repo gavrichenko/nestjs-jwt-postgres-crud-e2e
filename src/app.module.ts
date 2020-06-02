@@ -6,16 +6,18 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { IdeaModule } from './modules/idea/idea.module';
-import configuration from '../config/app.config';
-import configValidationSchema from '../config/app-config-validation-schema';
-import TypeOrmModuleOptions from '../config/type-orm.config';
 import { HttpErrorFilter } from './shared/http-error.filter';
 import { LoggingInterceptor } from './shared/logging.interceptor';
+import {
+  appConfig,
+  configValidationSchema,
+  TypeOrmModuleOptions,
+} from './config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      load: [configuration],
+      load: [appConfig],
       validationSchema: configValidationSchema,
       isGlobal: true, // ability to use ConfigModule in other modules
     }),

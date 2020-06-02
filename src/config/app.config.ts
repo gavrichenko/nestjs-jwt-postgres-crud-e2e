@@ -1,9 +1,9 @@
-export default () => ({
+export const appConfig = () => ({
   host: process.env.HOST,
   port: parseInt(process.env.PORT, 10),
   jwt: {
-    secret: process.env.JWT_SECRET,
-    accessTokenExpiresIn:  process.env.JWT_ACCESS_EXPIRES_IN,
+    secret: process.env.SECRET_FOR_ACCESS_TOKEN,
+    accessTokenExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN,
   },
   database: {
     host: process.env.DATABASE_HOST,
@@ -11,5 +11,6 @@ export default () => ({
     user: process.env.DATABASE_USER,
     password: process.env.DATABASE_PASSWORD,
     name: process.env.DATABASE_NAME,
+    logging: process.env.DATABASE_LOGGING.toLowerCase() === 'true',
   },
 });
