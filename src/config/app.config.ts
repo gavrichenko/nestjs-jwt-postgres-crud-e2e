@@ -7,11 +7,12 @@ export const appConfig = () => ({
     accessTokenExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN,
   },
   database: {
-    host: process.env.DATABASE_HOST,
-    port: parseInt(process.env.DATABASE_PORT, 10),
-    user: process.env.DATABASE_USER,
-    password: process.env.DATABASE_PASSWORD,
-    name: process.env.DATABASE_NAME,
-    logging: process.env.DATABASE_LOGGING.toLowerCase() === 'true',
+    host: process.env.TYPEORM_HOST,
+    port: parseInt(process.env.TYPEORM_PORT, 10),
+    user: process.env.TYPEORM_USERNAME,
+    password: process.env.TYPEORM_PASSWORD,
+    name: process.env.TYPEORM_DATABASE,
+    logging: process.env.TYPEORM_LOGGING.toLowerCase() === 'true',
+    synchronize: process.env.TYPEORM_SYNCHRONIZE.toLowerCase() === 'true',
   },
 });

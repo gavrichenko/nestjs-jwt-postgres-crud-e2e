@@ -14,7 +14,7 @@ export const TypeOrmModuleOptions: TypeOrmModuleAsyncOptions = {
     password: configService.get<string>('database.password'),
     database: configService.get<string>('database.name'),
     logging: configService.get<boolean>('database.logging'),
-    synchronize: true,
+    synchronize: configService.get<boolean>('database.synchronize'),
     ssl: false,
     entities: [UserEntity, IdeaEntity],
   }),
