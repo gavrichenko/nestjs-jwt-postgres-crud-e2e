@@ -11,13 +11,11 @@ async function bootstrap() {
   const PORT = configService.get<number>('port');
   const HOST = configService.get<string>('host');
 
-  app.setGlobalPrefix('api/v1'); // Setting base path
+  // app.setGlobalPrefix('api/v1'); // Setting base path
   app.useGlobalPipes(new ValidationPipe()); // Initialize global validation
   await setupSwagger(app);
 
-  await app.listen(PORT, () =>
-    Logger.verbose(`Server running on http://${HOST}:${PORT}`, 'Bootstrap'),
-  );
+  await app.listen(PORT, () => Logger.verbose(`Server running on http://${HOST}:${PORT}`, 'Bootstrap'));
 }
 
 bootstrap();
