@@ -12,6 +12,7 @@ import * as bcrypt from 'bcrypt';
 import { LoginDto } from '../../modules/auth/dto/login.dto';
 import { appConfig } from '../../config';
 import { CreateAccountDto } from '../../modules/auth/dto/create-account.dto';
+import { getUnixTimestamp } from '../utils';
 
 @EntityRepository(UserEntity)
 export class UsersRepository extends Repository<UserEntity> {
@@ -73,15 +74,17 @@ export class UsersRepository extends Repository<UserEntity> {
 
   async triggerRefreshToken(query: string): Promise<string> {
     try {
-      const profile: UserEntity = await this.findOneOrFail({
+      const user: UserEntity = await this.findOneOrFail({
         where: [{ username: query }, { email: query }],
       });
-
       const refreshTokenPayload = {
-        user_id: profile.id,
+        user_id: user.id,
+        sub: 'auth',
+        iat: getUnixTimestamp(),
+        exp: getUnixTimestamp() + getUnixTimestamp(this.appConfig.jwt.refreshTokenExpiresIn),
       };
       const refresh_token = jwt.sign(refreshTokenPayload, this.appConfig.jwt.secret_refresh);
-      await this.update(profile.id, { refresh_token });
+      await this.update(user.id, { refresh_token });
 
       return refresh_token;
     } catch (e) {

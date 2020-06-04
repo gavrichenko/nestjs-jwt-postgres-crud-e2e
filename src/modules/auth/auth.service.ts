@@ -7,6 +7,8 @@ import { UsersRepository } from '../../shared/repositories/users.repository';
 import { LoginDto } from './dto/login.dto';
 import { SignInResponse } from './dto/sign-in-response';
 import { CreateAccountDto } from './dto/create-account.dto';
+import { getUnixTimestamp } from '../../shared/utils';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +16,7 @@ export class AuthService {
     private jwtService: JwtService,
     @InjectRepository(UsersRepository)
     private readonly usersRepository: UsersRepository,
+    private readonly configService: ConfigService,
   ) {}
 
   async validateUser(dto: LoginDto): Promise<UserEntity> {
@@ -21,10 +24,15 @@ export class AuthService {
   }
 
   async signIn(userEntity: UserEntity, dto: LoginDto): Promise<SignInResponse> {
-    if (!userEntity.is_active) throw new BadRequestException('Account is not active');
+    if (userEntity.is_banned) throw new BadRequestException('This is a banned account');
+    if (!userEntity.is_activated) throw new BadRequestException('Account is not active');
 
+    console.log(this.configService.get('jwt.accessTokenExpiresIn'));
     const jwtPayload = {
       user_id: userEntity.id,
+      sub: 'auth',
+      iat: getUnixTimestamp(),
+      exp: getUnixTimestamp() + getUnixTimestamp(this.configService.get('jwt.accessTokenExpiresIn')),
     };
 
     const access_token: string = this.jwtService.sign(jwtPayload);

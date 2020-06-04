@@ -1,10 +1,13 @@
+import * as ms from 'ms';
+
 export const appConfig = () => ({
   host: process.env.HOST,
   port: parseInt(process.env.PORT, 10),
   jwt: {
     secret_access: process.env.SECRET_FOR_ACCESS_TOKEN,
     secret_refresh: process.env.SECRET_FOR_REFRESH_TOKEN,
-    accessTokenExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN,
+    accessTokenExpiresIn: ms(process.env.JWT_ACCESS_EXPIRES_IN) as number,
+    refreshTokenExpiresIn: ms(process.env.JWT_REFRESH_EXPIRES_IN) as number,
   },
   database: {
     host: process.env.TYPEORM_HOST,

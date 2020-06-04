@@ -8,6 +8,7 @@ export const configValidationSchema = Joi.object({
   SECRET_FOR_ACCESS_TOKEN: Joi.string().required(),
   SECRET_FOR_REFRESH_TOKEN: Joi.string().required(),
   JWT_ACCESS_EXPIRES_IN: Joi.string().required(),
+  JWT_REFRESH_EXPIRES_IN: Joi.string().required(),
   // configuration typeorm cli
   TYPEORM_CONNECTION: Joi.string().required(),
   TYPEORM_MIGRATIONS: Joi.string().required(),

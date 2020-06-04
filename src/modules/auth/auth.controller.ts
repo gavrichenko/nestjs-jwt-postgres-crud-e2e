@@ -1,7 +1,8 @@
-import { Controller, Post, HttpCode, Body, UsePipes } from '@nestjs/common';
+import { Controller, Post, HttpCode, Body, UsePipes, Get, UseGuards, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiOkResponse,
@@ -15,6 +16,7 @@ import { LoginDto } from './dto/login.dto';
 import { SignInResponse } from './dto/sign-in-response';
 import { UserEntity } from '../../shared/entities/user.entity';
 import { CreateAccountDto } from './dto/create-account.dto';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -45,5 +47,12 @@ export class AuthController {
   @ApiBadRequestResponse({ description: 'User already exists' })
   async signUp(@Body() dto: CreateAccountDto) {
     return this.authService.signUp(dto);
+  }
+
+  @Get('profile')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  getProfile(@Req() req) {
+    return 'OK';
   }
 }

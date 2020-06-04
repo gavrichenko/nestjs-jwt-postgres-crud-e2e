@@ -39,7 +39,10 @@ export class UserEntity {
   role: number;
 
   @Column('boolean')
-  is_active: boolean;
+  is_activated: boolean;
+
+  @Column('boolean')
+  is_banned: boolean;
 
   @Column({
     type: 'text',
@@ -61,7 +64,8 @@ export class UserEntity {
   @BeforeInsert()
   fillDefaults() {
     this.role = 0;
-    this.is_active = true;
+    this.is_activated = true;
+    this.is_banned = false;
   }
 
   toResponseObject(): UserResponseDto {

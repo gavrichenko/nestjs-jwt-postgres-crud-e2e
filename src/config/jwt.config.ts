@@ -7,7 +7,8 @@ export const JwtModuleOptions: JwtModuleAsyncOptions = {
   useFactory: async (configService: ConfigService) => ({
     secret: configService.get<string>('jwt.secret_access'), // don't forget: it's use also in JwtStrategy
     signOptions: {
-      expiresIn: configService.get<string>('jwt.accessTokenExpiresIn'),
+      // expiresIn: configService.get<string>('jwt.accessTokenExpiresIn'),
+      algorithm: 'HS256',
     },
   }),
 };
