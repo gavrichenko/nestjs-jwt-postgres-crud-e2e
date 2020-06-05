@@ -1,4 +1,4 @@
-import { Controller, Post, HttpCode, Body, UsePipes, Get, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, HttpCode, Body, UsePipes, Get, UseGuards, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
   ApiBadRequestResponse,
@@ -17,6 +17,7 @@ import { SignInResponse } from './dto/sign-in-response';
 import { UserEntity } from '../../shared/entities/user.entity';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { RefreshDto } from './dto/refresh.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -32,7 +33,7 @@ export class AuthController {
   @ApiUnauthorizedResponse({ description: 'Invalid credentials' })
   async login(@Body() dto: LoginDto): Promise<SignInResponse> {
     const user: UserEntity = await this.authService.validateUser(dto);
-    return this.authService.signIn(user, dto);
+    return this.authService.signIn(user);
   }
 
   @Post('signup')
@@ -49,10 +50,24 @@ export class AuthController {
     return this.authService.signUp(dto);
   }
 
-  @Get('profile')
+  @Post('refresh')
+  @UsePipes(ValidationPipe)
+  @HttpCode(201)
+  @ApiOperation({ summary: 'issue token pair by refresh token' })
+  @ApiBody({ type: RefreshDto })
+  @ApiCreatedResponse({
+    description: 'Refresh token pair',
+    type: SignInResponse,
+  })
+  @ApiBadRequestResponse()
+  async refreshTokenPair(@Body() dto: RefreshDto) {
+    return this.authService.refresh(dto);
+  }
+
+  @Get('test/jwt')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  getProfile(@Req() req) {
-    return 'OK';
+  getProfile(@Request() req) {
+    return req.user;
   }
 }

@@ -65,8 +65,8 @@ describe('UsersController', () => {
 
       const { body, status } = await getResponse(getRoutePath('getUsers'));
       const users = body as UserResponseDto[];
-      const user1 = users.find(x => x.username === registeredUser1.username)
-      const user2 = users.find(x => x.username === registeredUser2.username)
+      const user1 = users.find(x => x.username === registeredUser1.username);
+      const user2 = users.find(x => x.username === registeredUser2.username);
       user1.created_at = new Date(user1.created_at);
       user2.created_at = new Date(user2.created_at);
       expect(status).toBe(200);
@@ -99,21 +99,21 @@ describe('UsersController', () => {
       expect(body).toEqual(existedUser);
     });
 
-    it('get user by nonexistent username', async () => {
+    it('get user by nonexistent username (404)', async () => {
       const username = 'nonexistent';
       const { body, status } = await getResponse(getRoutePath('getUser', '/').concat(username));
       body.created_at = new Date(body.created_at);
       expect(status).toBe(404);
     });
 
-    it('get user by nonexistent email', async () => {
+    it('get user by nonexistent email (404)', async () => {
       const email = 'nonexistent@emal.com';
       const { body, status } = await getResponse(getRoutePath('getUser', '/').concat(email));
       body.created_at = new Date(body.created_at);
       expect(status).toBe(404);
     });
 
-    it('get user without username or email', async () => {
+    it('get user without username or email (404)', async () => {
       const { body, status } = await getResponse(getRoutePath('getUser'));
       body.created_at = new Date(body.created_at);
       expect(status).toBe(404);

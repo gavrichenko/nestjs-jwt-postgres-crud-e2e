@@ -81,6 +81,7 @@ export class UsersRepository extends Repository<UserEntity> {
       });
       const refreshTokenPayload = {
         user_id: user.id,
+        username: user.username,
         sub: 'auth',
         iat: getUnixTimestamp(),
         exp: getUnixTimestamp() + getUnixTimestamp(this.appConfig.jwt.refreshTokenExpiresIn),
@@ -91,6 +92,14 @@ export class UsersRepository extends Repository<UserEntity> {
       return refresh_token;
     } catch (e) {
       throw new InternalServerErrorException('INTERNAL_SERVER_ERROR');
+    }
+  }
+
+  async findUserByRefreshToken(refresh_token: string): Promise<UserEntity> {
+    try {
+      return await this.findOneOrFail({ where: { refresh_token } });
+    } catch (e) {
+      throw new NotFoundException('User could not found');
     }
   }
 }
