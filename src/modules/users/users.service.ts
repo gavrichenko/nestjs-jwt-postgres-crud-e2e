@@ -11,8 +11,8 @@ export class UsersService {
     private readonly usersRepository: UsersRepository,
   ) {}
 
-  async getUser(username: string): Promise<UserResponseDto> {
-    const user: UserEntity = await this.usersRepository.getUserByUsername(username);
+  async getUser(usernameOrEmail: string): Promise<UserResponseDto> {
+    const user: UserEntity = await this.usersRepository.getUserByUsernameOrEmail(usernameOrEmail);
     return user.toResponseObject();
   }
 

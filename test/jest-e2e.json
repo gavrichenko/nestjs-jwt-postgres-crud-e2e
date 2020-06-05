@@ -5,5 +5,11 @@
   "testRegex": ".e2e-spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
-  }
+  },
+  "maxWorkers": 1,
+  "displayName": {
+    "name": "end-2-end",
+    "color": "blue"
+  },
+  "verbose": false
 }

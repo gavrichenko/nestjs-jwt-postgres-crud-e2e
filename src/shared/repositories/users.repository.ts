@@ -22,9 +22,11 @@ export class UsersRepository extends Repository<UserEntity> {
     this.appConfig = appConfig();
   }
 
-  async getUserByUsername(username: string): Promise<UserEntity> {
+  async getUserByUsernameOrEmail(usernameOrEmail: string): Promise<UserEntity> {
     try {
-      const item: UserEntity = await this.findOneOrFail({ username });
+      const item: UserEntity = await this.findOneOrFail({
+        where: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
+      });
       return item;
     } catch (err) {
       throw new NotFoundException('User could not found');

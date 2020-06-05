@@ -3,13 +3,13 @@ import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { IdeaModule } from '../../src/modules/idea/idea.module';
 import { AppTestModule } from '../app.test.module';
-import { getConnection } from 'typeorm';
 import { IdeaService } from '../../src/modules/idea/idea.service';
 import { IdeaResponseDto } from '../../src/modules/idea/dto/idea-response.dto';
 import { IdeaCreateDto } from '../../src/modules/idea/dto/idea-create.dto';
+import { clearDb } from './shared';
 
 const routes = {
-  getIdeas: { method: 'GET', path: '/idea/ideas', describe: 'get all ideas' },
+  getIdeas: { method: 'GET', path: '/idea/ideas', describe: 'get ideas list' },
   getIdea: { method: 'GET', path: '/idea', describe: 'get idea by id' },
   updateIdea: { method: 'PUT', path: '/idea', describe: 'update idea' },
   createIdea: { method: 'POST', path: '/idea', describe: 'create idea' },
@@ -21,15 +21,7 @@ const getTestName = (p: keyof typeof routes) =>
 const getRoutePath = (p: keyof typeof routes, postfix?: string): string =>
   postfix ? routes[p].path.concat(postfix) : routes[p].path;
 
-const clearDb = async () => {
-  const entities = getConnection().entityMetadatas;
-  for (const entity of entities) {
-    const repository = await getConnection().getRepository(entity.name);
-    await repository.query(`DELETE FROM ${entity.tableName};`);
-  }
-};
-
-describe('IdeaController (e2e)', () => {
+describe('IdeaController', () => {
   let app: INestApplication;
   let ideaService: IdeaService;
 
