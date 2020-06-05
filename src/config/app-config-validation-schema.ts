@@ -22,4 +22,6 @@ export const configValidationSchema = Joi.object({
   TYPEORM_DATABASE: Joi.string().required(),
   TYPEORM_LOGGING: Joi.boolean().required(),
   TYPEORM_SYNCHRONIZE: Joi.boolean().required(),
+  // configuration db for testing
+  TEST_DATABASE_NAME: Joi.string().required(),
 });

@@ -17,11 +17,7 @@ export class HttpErrorFilter implements ExceptionFilter {
         timestamp: new Date().toLocaleString(),
         message: 'Internal error',
       };
-      Logger.error(
-        `Internal error: ${exception}`,
-        JSON.stringify(errorResponse),
-        'ExceptionFilter',
-      );
+      Logger.error(`Internal error: ${exception}`, JSON.stringify(errorResponse), 'ExceptionFilter');
       return host
         .switchToHttp()
         .getResponse()
@@ -46,11 +42,7 @@ export class HttpErrorFilter implements ExceptionFilter {
       error: getErrorMsg(),
     };
 
-    Logger.error(
-      `${request.method} ${request.url}`,
-      JSON.stringify(errorResponse),
-      'ExceptionFilter',
-    );
+    Logger.error(`${request.method} ${request.url}`, JSON.stringify(errorResponse), 'ExceptionFilter');
 
     response.status(errorResponse.code).json(errorResponse);
   }

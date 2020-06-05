@@ -18,4 +18,13 @@ export const appConfig = () => ({
     logging: process.env.TYPEORM_LOGGING.toLowerCase() === 'true',
     synchronize: process.env.TYPEORM_SYNCHRONIZE.toLowerCase() === 'true',
   },
+  database_test: {
+    host: process.env.TYPEORM_HOST,
+    port: parseInt(process.env.TYPEORM_PORT, 10),
+    user: process.env.TYPEORM_USERNAME,
+    password: process.env.TYPEORM_PASSWORD,
+    name: process.env.TEST_DATABASE_NAME,
+    logging: false,
+    synchronize: true,
+  },
 });
