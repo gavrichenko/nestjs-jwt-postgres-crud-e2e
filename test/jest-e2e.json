@@ -11,5 +11,5 @@
     "name": "end-2-end",
     "color": "blue"
   },
-  "verbose": false
+  "verbose": true
 }

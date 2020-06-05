@@ -1,9 +1,9 @@
 import {
-  BadRequestException,
   HttpException,
   HttpStatus,
   InternalServerErrorException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
@@ -70,7 +70,7 @@ export class UsersRepository extends Repository<UserEntity> {
       }
       throw new Error();
     } catch (err) {
-      throw new BadRequestException('Please check your credentials');
+      throw new UnauthorizedException('Please check your credentials');
     }
   }
 

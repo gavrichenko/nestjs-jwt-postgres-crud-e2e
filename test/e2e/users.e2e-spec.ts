@@ -3,7 +3,6 @@ import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { AppTestModule } from '../app.test.module';
 import { clearDb } from './shared';
-import { UsersService } from '../../src/modules/users/users.service';
 import { UsersModule } from '../../src/modules/users/users.module';
 import { AuthService } from '../../src/modules/auth/auth.service';
 import { AuthModule } from '../../src/modules/auth/auth.module';
@@ -37,7 +36,6 @@ const registeredUser2: CreateAccountDto = {
 
 describe('UsersController', () => {
   let app: INestApplication;
-  let usersService: UsersService;
   let authService: AuthService;
 
   beforeAll(async () => {
@@ -46,7 +44,6 @@ describe('UsersController', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
-    usersService = await moduleRef.resolve(UsersService);
     authService = await moduleRef.resolve(AuthService);
     await app.init();
   });

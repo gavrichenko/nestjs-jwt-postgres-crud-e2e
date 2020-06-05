@@ -27,7 +27,6 @@ export class AuthService {
     if (userEntity.is_banned) throw new BadRequestException('This is a banned account');
     if (!userEntity.is_activated) throw new BadRequestException('Account is not active');
 
-    console.log(this.configService.get('jwt.accessTokenExpiresIn'));
     const jwtPayload = {
       user_id: userEntity.id,
       sub: 'auth',
