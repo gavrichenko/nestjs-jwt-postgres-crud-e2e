@@ -64,7 +64,9 @@ describe('UsersController', () => {
       const existedUser2 = await authService.signUp(registeredUser2);
 
       const { body, status } = await getResponse(getRoutePath('getUsers'));
-      const [user1, user2] = body as UserResponseDto[];
+      const users = body as UserResponseDto[];
+      const user1 = users.find(x => x.username === registeredUser1.username)
+      const user2 = users.find(x => x.username === registeredUser2.username)
       user1.created_at = new Date(user1.created_at);
       user2.created_at = new Date(user2.created_at);
       expect(status).toBe(200);

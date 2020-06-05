@@ -222,11 +222,20 @@ describe('AuthController', () => {
         password: userDataset1.password,
       };
       const { body, status } = await postResponse(getRoutePath('signin')).send(loginDto);
-      const { access_token, refresh_token, ...userInfo } = body as SignInResponse;
-      userInfo.created_at = new Date(userInfo.created_at);
+      const { access_token, refresh_token } = body as SignInResponse;
       expect(status).toBe(200);
-      expect(userInfo.username).toEqual(userDataset1.username);
+      expect(body).toEqual(
+        expect.objectContaining({
+          username: userDataset1.username,
+          email: userDataset1.email,
+          lastName: userDataset1.lastName,
+          firstName: userDataset1.firstName,
+          created_at: expect.any(String),
+          id: expect.any(String),
+        } as UserResponseDto),
+      );
       expect(body.hasOwnProperty('access_token')).toBeTruthy();
+      expect(body.hasOwnProperty('refresh_token')).toBeTruthy();
       expect(typeof access_token === 'string' && access_token.length).toBeTruthy();
       expect(typeof refresh_token === 'string' && refresh_token.length).toBeTruthy();
     });
@@ -238,11 +247,20 @@ describe('AuthController', () => {
         password: userDataset1.password,
       };
       const { body, status } = await postResponse(getRoutePath('signin')).send(loginDto);
-      const { access_token, refresh_token, ...userInfo } = body as SignInResponse;
-      userInfo.created_at = new Date(userInfo.created_at);
+      const { access_token, refresh_token } = body as SignInResponse;
       expect(status).toBe(200);
-      expect(userInfo.username).toEqual(userDataset1.username);
+      expect(body).toEqual(
+        expect.objectContaining({
+          username: userDataset1.username,
+          email: userDataset1.email,
+          lastName: userDataset1.lastName,
+          firstName: userDataset1.firstName,
+          created_at: expect.any(String),
+          id: expect.any(String),
+        } as UserResponseDto),
+      );
       expect(body.hasOwnProperty('access_token')).toBeTruthy();
+      expect(body.hasOwnProperty('refresh_token')).toBeTruthy();
       expect(typeof access_token === 'string' && access_token.length).toBeTruthy();
       expect(typeof refresh_token === 'string' && refresh_token.length).toBeTruthy();
     });
