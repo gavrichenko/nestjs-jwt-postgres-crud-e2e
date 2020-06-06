@@ -8,7 +8,7 @@ import { AuthModule } from '../../src/modules/auth/auth.module';
 import { CreateAccountDto } from '../../src/modules/auth/dto/create-account.dto';
 import { UsersModule } from '../../src/modules/users/users.module';
 import { LoginDto } from '../../src/modules/auth/dto/login.dto';
-import { SignInResponse } from '../../src/modules/auth/dto/sign-in-response';
+import { SignInResponseDto } from '../../src/modules/auth/dto/sign-in-response.dto';
 import { getUnixTimestamp } from '../../src/shared/utils';
 import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
@@ -17,6 +17,7 @@ import { RefreshDto } from '../../src/modules/auth/dto/refresh.dto';
 const routes = {
   signin: { method: 'POST', path: '/auth/signin', describe: 'user login via username or email' },
   refresh: { method: 'POST', path: '/auth/refresh', describe: 'issue token pair by refresh token' },
+  logout: { method: 'POST', path: '/auth/logout', describe: 'logout' },
   testAuthJwt: { method: 'GET', path: '/auth/test/jwt', describe: 'test rout with JwtAuthGuard' },
 };
 
@@ -50,7 +51,7 @@ describe('JWT', () => {
   const getResponse = (path: string) => request(app.getHttpServer()).get(path);
   const postResponse = (path: string) => request(app.getHttpServer()).post(path);
 
-  const signIn = async (): Promise<SignInResponse> => {
+  const signIn = async (): Promise<SignInResponseDto> => {
     const loginDto: Partial<LoginDto> = {
       username: userDataset1.username,
       password: userDataset1.password,
@@ -100,7 +101,7 @@ describe('JWT', () => {
       expect(decodedJwt['exp'] - timeBuffer).toBeLessThan(decodedJwt['iat'] + accessTokenExpiresIn);
     });
 
-    it('Payload of jwt contains user id', async () => {
+    it('Payload of jwt contains user id and username', async () => {
       const body = await signIn();
       const decodedJwt = jwt.decode(body.access_token);
       expect(decodedJwt).toEqual(
@@ -150,7 +151,7 @@ describe('JWT', () => {
       expect(decodedJwt['exp'] - timeBuffer).toBeLessThan(decodedJwt['iat'] + refreshTokenExpiresIn);
     });
 
-    it('Payload of jwt contains user id', async () => {
+    it('Payload of jwt contains user id and username', async () => {
       const body = await signIn();
       const decodedJwt = jwt.decode(body.refresh_token);
       expect(decodedJwt).toEqual(
@@ -212,7 +213,7 @@ describe('JWT', () => {
       // getting new token pair by existed refresh token
       const refreshDto: RefreshDto = { refresh_token };
       const refreshResponse = await postResponse(getRoutePath('refresh')).send(refreshDto);
-      const refreshResponseBody = refreshResponse.body as SignInResponse;
+      const refreshResponseBody = refreshResponse.body as SignInResponseDto;
       expect(refreshResponse.status).toBe(201);
       expect(refreshResponseBody.username).toBe(username);
 
@@ -253,7 +254,19 @@ describe('JWT', () => {
       expect(status).toBe(404);
     });
 
-    it.todo('Refresh tokens become invalid on logout');
+    it('Refresh tokens become invalid on logout', async () => {
+      const { refresh_token, access_token } = await signIn();
+      const logoutRes = await postResponse(getRoutePath('logout')).set(
+        'Authorization',
+        'Bearer '.concat(access_token),
+      );
+      expect(logoutRes.status).toBe(200);
+      expect(logoutRes.body).toEqual({ success: true });
+
+      const refreshRes = await postResponse(getRoutePath('refresh')).send({ refresh_token });
+      expect(refreshRes.status).toBe(404);
+    });
+
     it.todo('Multiple refresh tokens are valid');
   });
 

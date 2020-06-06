@@ -8,7 +8,7 @@ import { AuthModule } from '../../src/modules/auth/auth.module';
 import { CreateAccountDto } from '../../src/modules/auth/dto/create-account.dto';
 import { UsersModule } from '../../src/modules/users/users.module';
 import { LoginDto } from '../../src/modules/auth/dto/login.dto';
-import { SignInResponse } from '../../src/modules/auth/dto/sign-in-response';
+import { SignInResponseDto } from '../../src/modules/auth/dto/sign-in-response.dto';
 import { UserResponseDto } from '../../src/modules/users/dto/user-response.dto';
 
 const routes = {
@@ -222,7 +222,7 @@ describe('AuthController', () => {
         password: userDataset1.password,
       };
       const { body, status } = await postResponse(getRoutePath('signin')).send(loginDto);
-      const { access_token, refresh_token } = body as SignInResponse;
+      const { access_token, refresh_token } = body as SignInResponseDto;
       expect(status).toBe(200);
       expect(body).toEqual(
         expect.objectContaining({
@@ -247,7 +247,7 @@ describe('AuthController', () => {
         password: userDataset1.password,
       };
       const { body, status } = await postResponse(getRoutePath('signin')).send(loginDto);
-      const { access_token, refresh_token } = body as SignInResponse;
+      const { access_token, refresh_token } = body as SignInResponseDto;
       expect(status).toBe(200);
       expect(body).toEqual(
         expect.objectContaining({

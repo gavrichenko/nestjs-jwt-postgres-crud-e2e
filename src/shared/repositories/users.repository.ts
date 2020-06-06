@@ -13,6 +13,7 @@ import { LoginDto } from '../../modules/auth/dto/login.dto';
 import { appConfig } from '../../config';
 import { CreateAccountDto } from '../../modules/auth/dto/create-account.dto';
 import { getUnixTimestamp } from '../utils';
+import { LogoutResponseDto } from '../../modules/auth/dto/logout-response.dto';
 
 @EntityRepository(UserEntity)
 export class UsersRepository extends Repository<UserEntity> {
@@ -98,6 +99,16 @@ export class UsersRepository extends Repository<UserEntity> {
   async findUserByRefreshToken(refresh_token: string): Promise<UserEntity> {
     try {
       return await this.findOneOrFail({ where: { refresh_token } });
+    } catch (e) {
+      throw new NotFoundException('User could not found');
+    }
+  }
+
+  async removeRefreshToken(user_id: string): Promise<LogoutResponseDto> {
+    try {
+      const user = await this.findOneOrFail({ where: { id: user_id } });
+      await this.update(user.id, { refresh_token: null });
+      return { success: true };
     } catch (e) {
       throw new NotFoundException('User could not found');
     }

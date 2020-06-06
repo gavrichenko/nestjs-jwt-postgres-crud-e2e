@@ -5,11 +5,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserResponseDto } from '../users/dto/user-response.dto';
 import { UsersRepository } from '../../shared/repositories/users.repository';
 import { LoginDto } from './dto/login.dto';
-import { SignInResponse } from './dto/sign-in-response';
+import { SignInResponseDto } from './dto/sign-in-response.dto';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { getUnixTimestamp } from '../../shared/utils';
 import { ConfigService } from '@nestjs/config';
 import { RefreshDto } from './dto/refresh.dto';
+import { LogoutResponseDto } from './dto/logout-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -24,7 +25,7 @@ export class AuthService {
     return await this.usersRepository.validateUser(dto);
   }
 
-  async signIn(userEntity: UserEntity): Promise<SignInResponse> {
+  async signIn(userEntity: UserEntity): Promise<SignInResponseDto> {
     if (userEntity.is_banned) throw new BadRequestException('This is a banned account');
     if (!userEntity.is_activated) throw new BadRequestException('Account is not active');
 
@@ -60,8 +61,12 @@ export class AuthService {
     return createdUser.toResponseObject();
   }
 
-  async refresh(dto: RefreshDto): Promise<SignInResponse> {
+  async refresh(dto: RefreshDto): Promise<SignInResponseDto> {
     const user = await this.usersRepository.findUserByRefreshToken(dto.refresh_token);
     return await this.signIn(user);
+  }
+
+  async logout(user_id: string): Promise<LogoutResponseDto> {
+    return await this.usersRepository.removeRefreshToken(user_id);
   }
 }

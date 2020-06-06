@@ -1,4 +1,14 @@
-import { Controller, Post, HttpCode, Body, UsePipes, Get, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  HttpCode,
+  Body,
+  UsePipes,
+  Get,
+  UseGuards,
+  Request,
+  NotFoundException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
   ApiBadRequestResponse,
@@ -13,11 +23,12 @@ import {
 import { ValidationPipe } from '../../shared/validation.pipe';
 import { UserResponseDto } from '../users/dto/user-response.dto';
 import { LoginDto } from './dto/login.dto';
-import { SignInResponse } from './dto/sign-in-response';
+import { SignInResponseDto } from './dto/sign-in-response.dto';
 import { UserEntity } from '../../shared/entities/user.entity';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RefreshDto } from './dto/refresh.dto';
+import { LogoutResponseDto } from './dto/logout-response.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -29,9 +40,9 @@ export class AuthController {
   @HttpCode(200)
   @ApiOperation({ summary: 'user login via username or email' })
   @ApiBody({ type: LoginDto })
-  @ApiOkResponse({ type: SignInResponse })
+  @ApiOkResponse({ type: SignInResponseDto })
   @ApiUnauthorizedResponse({ description: 'Invalid credentials' })
-  async login(@Body() dto: LoginDto): Promise<SignInResponse> {
+  async login(@Body() dto: LoginDto): Promise<SignInResponseDto> {
     const user: UserEntity = await this.authService.validateUser(dto);
     return this.authService.signIn(user);
   }
@@ -57,11 +68,27 @@ export class AuthController {
   @ApiBody({ type: RefreshDto })
   @ApiCreatedResponse({
     description: 'Refresh token pair',
-    type: SignInResponse,
+    type: SignInResponseDto,
   })
   @ApiBadRequestResponse()
   async refreshTokenPair(@Body() dto: RefreshDto) {
     return this.authService.refresh(dto);
+  }
+
+  @Post('logout')
+  @UsePipes(ValidationPipe)
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(200)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'logout' })
+  @ApiCreatedResponse({ type: LogoutResponseDto })
+  @ApiBadRequestResponse()
+  async logout(@Request() req) {
+    if (!req.user || !req.user.userId) {
+      throw new NotFoundException('User could not found');
+    }
+    const { userId } = req.user;
+    return this.authService.logout(userId);
   }
 
   @Get('test/jwt')
